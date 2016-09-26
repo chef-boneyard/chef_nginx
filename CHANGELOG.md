@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of the nginx cookbook.
 
+## 3.1.2 (2016-09-26)
+- Add ability to pin package version using new attribute default['nginx']['package_version'].  This defaults to nil which preserves functionality of the package resource if it is not overriden. 
+
 ## 3.1.1 (2016-09-21)
 - Raise on error vs. Chef::Appliation.fatal
 - Require compat_resource with notification fixes
