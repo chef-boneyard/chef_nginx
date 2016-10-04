@@ -22,17 +22,18 @@
 
 # In order to update the version, the checksum attribute must be changed too.
 # This attribute is defined in the source.rb attribute file
-default['nginx']['version']      = '1.10.1'
-default['nginx']['package_name'] = 'nginx'
-default['nginx']['port']         = '80'
-default['nginx']['dir']          = '/etc/nginx'
-default['nginx']['script_dir']   = '/usr/sbin'
-default['nginx']['log_dir']      = '/var/log/nginx'
-default['nginx']['log_dir_perm'] = '0750'
-default['nginx']['binary']       = '/usr/sbin/nginx'
-default['nginx']['default_root'] = '/var/www/nginx-default'
-default['nginx']['ulimit']       = '1024'
-default['nginx']['pid']          = '/var/run/nginx.pid'
+default['nginx']['version']         = '1.10.1'
+default['nginx']['package_version'] = nil
+default['nginx']['package_name']    = 'nginx'
+default['nginx']['port']            = '80'
+default['nginx']['dir']             = '/etc/nginx'
+default['nginx']['script_dir']      = '/usr/sbin'
+default['nginx']['log_dir']         = '/var/log/nginx'
+default['nginx']['log_dir_perm']    = '0750'
+default['nginx']['binary']          = '/usr/sbin/nginx'
+default['nginx']['default_root']    = '/var/www/nginx-default'
+default['nginx']['ulimit']          = '1024'
+default['nginx']['pid']             = '/var/run/nginx.pid'
 
 case node['platform_family']
 when 'debian'
