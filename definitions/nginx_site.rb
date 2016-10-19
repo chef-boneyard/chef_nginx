@@ -25,7 +25,6 @@ define :nginx_site, enable: true, timing: :delayed do
     template "#{node['nginx']['dir']}/sites-available/#{params[:name]}" do
       source params[:template]
       variables(params[:variables])
-      only_if { params[:only_if] }
       notifies :reload, 'service[nginx]', params[:timing]
     end
 
