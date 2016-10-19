@@ -26,6 +26,7 @@ define :nginx_site, enable: true, timing: :delayed do
       source params[:template]
       variables(params[:variables])
       only_if { params[:template] }
+      notifies :reload, 'service[nginx]', params[:timing]
     end
 
     execute "nxensite #{params[:name]}" do
