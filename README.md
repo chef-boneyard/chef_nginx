@@ -243,38 +243,51 @@ These attributes are used in the `chef_nginx::upload_progress_module` recipe.
 - `node['nginx']['upload_progress']['zone_name']` - Zone name which will be used to store the per-connection tracking information. Default is `proxied`.
 - `node['nginx']['upload_progress']['zone_size']` - Zone size in bytes. Default is `1m` (1 megabyte).
 
-## Recipes
+## Resources
 
-This cookbook contains a large number of recipes, but the `default` can be used for all install scenarios given the correct attributes are set. The remainder of the recipes are related to passenger and source installation. See the usage section for further details.
+### nginx_site
 
-### default
+Enable or disable a Server Block in `#{node['nginx']['dir']}/sites-available` by calling nxensite or nxdissite (introduced by this cookbook) to manage the symbolic link in `#{node['nginx']['dir']}/sites-enabled`.
 
-The default recipe will install nginx as a native package for the system through the distro package manager and sets up the configuration according to the Debian site enable/disable style with `sites-enabled` using the `nxensite` and `nxdissite` scripts. The nginx service will be managed with the normal init scripts that are presumably included in the native package.
+### Actions
 
-- Includes the `repo` recipe to setup the nginx.org upstream repo unless `node['nginx']['repo_source']` is set to nil
-- Includes the `ohai_plugin` recipe to provide additional nginx information to Chef via an Ohai plugin.
+- `enable` - Enable the nginx site (default)
+- `disable` - Disable the nginx site
 
-### socketproxy
+### Properties:
 
-This will add socketproxy support to your nginx proxy setup. Do not include this recipe directly. Instead, add it to the `node['nginx']['default']['modules']` array (see below).
+- `name` - (optional) Name of the site to enable. By default it's assumed that the name of the nginx_site resource is the site name, but this allows overriding that.
+- `template` - (optional) Path to the source for the `template` resource.
+- `variables` - (optional) Variables to be used with the `template` resource
 
-### ohai_plugin
+## Ohai Plugin
 
-This recipe provides an Ohai plugin as a template. It is included by both the `default` and `source` recipes.
+The `ohai_plugin` recipe includes an Ohai plugin. It will be automatically installed and activated, providing the following attributes via ohai, no matter how nginx is installed (source or package):
 
-### authorized_ips
+- `node['nginx']['version']` - version of nginx
+- `node['nginx']['configure_arguments']` - options passed to `./configure` when nginx was built
+- `node['nginx']['prefix']` - installation prefix
+- `node['nginx']['conf_path']` - configuration file path
 
-Sets up configuration for the `authorized_ip` nginx module. Do not include this recipe directly. Instead, add it to the `node['nginx']['default']['modules']` array (see below).
+In the source recipe, it is used to determine whether control attributes for building nginx have changed.
 
-### source
+## Usage
 
-This recipe is responsible for building nginx from source. It ensures that the required packages to build nginx are installed (pcre, openssl, compile tools). The source will be downloaded from the `node['nginx']['source']['url']`. The `node['nginx']['user']` will be created as a system user. If you want to use existing user set `node['nginx']['source']['use_existing_user']` to `true`. The appropriate configuration and log directories and config files will be created as well according to the attributes `node['nginx']['dir']` and `node['nginx']['log_dir']`.
+This cookbook provides three distinct installation methods, all of which are controlled via attributes and executed using the chef_nginx::default recipe.
 
-The recipe attempts to detect whether additional modules should be added to the configure command through recipe inclusion (see below), and whether the version or configuration flags have changed and should trigger a recompile.
+### Package installation using the nginx.org repositories
 
-The nginx service will be set up according to `node['nginx']['init_style']`.
+Nginx provides repositories for RHEL, Debian/Ubuntu, and Suse platforms with up to date packages available on older distributions. Due to the age of many nginx packages shipping with distros we believe this is the ideal installation method. With no attributes set the nginx.org repositories will be added to your system and nginx will be installed via package. This provides a solid out of the box install for most users.
 
-**RHEL/CentOS** This recipe should work on RHEL/CentOS with "init" as the init style.
+### Package installation using distro repositories
+
+If you prefer to use the packages included in your distro or to roll your own packages you'll want to set `node['nginx']['repo_source']` to `nil` to skip the repository setup. The default recipe will still install nginx from packages, but you'll retain control over the package location.
+
+### Source installation to compile non-dynamic modules
+
+If you need control over how nginx is built, or you need non-dynamic modules to be included you'll need to compile nginx from source. We highly recommend against using this method as it requires the installation of a full compilation toolchain and development dependencies on your nodes. Creating your own packages with nginx compiled as necessary is a preferred option. If that's not possible you can set `node['nginx']['install_method']` to `source` and provide a version in `node['nginx']['version']`.
+
+#### Specifying Modules to compile
 
 The following recipes are used to build module support into nginx. To use a module in the `chef_nginx::source` recipe, add its recipe name to the attribute `node['nginx']['source']['modules']`.
 
@@ -320,23 +333,6 @@ node.run_state['nginx_configure_flags'] =
 ```
 
 The recipe will be included by `recipe[chef_nginx::source]` automatically, adding the configure flags. Add any other configuration templates or other resources as required. See the recipes described above for examples.
-
-## Ohai Plugin
-
-The `ohai_plugin` recipe includes an Ohai plugin. It will be automatically installed and activated, providing the following attributes via ohai, no matter how nginx is installed (source or package):
-
-- `node['nginx']['version']` - version of nginx
-- `node['nginx']['configure_arguments']` - options passed to `./configure` when nginx was built
-- `node['nginx']['prefix']` - installation prefix
-- `node['nginx']['conf_path']` - configuration file path
-
-In the source recipe, it is used to determine whether control attributes for building nginx have changed.
-
-## Usage
-
-Include the recipe on your node or role that fits how you wish to install nginx on your system per the recipes section above. Modify the attributes as required in your role to change how various configuration is applied per the attributes section above. In general, override attributes in the role should be used when changing attributes.
-
-There's some redundancy in that the config handling hasn't been separated from the installation method (yet), so use only one of the recipes, default or source.
 
 ## License & Authors
 
