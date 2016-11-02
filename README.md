@@ -289,21 +289,31 @@ If you need control over how nginx is built, or you need non-dynamic modules to 
 
 #### Specifying Modules to compile
 
-The following recipes are used to build module support into nginx. To use a module in the `chef_nginx::source` recipe, add its recipe name to the attribute `node['nginx']['source']['modules']`.
+The following recipes are used to build module support into nginx. To compile a module, add its recipe name to the array attribute `node['nginx']['source']['modules']`.
 
 - `ipv6.rb` - enables IPv6 support
+- `headers_more_module` -
+- `http_auth_request_module``
 - `http_echo_module.rb` - downloads the `http_echo_module` module and enables it as a module when compiling nginx.
 - `http_geoip_module.rb` - installs the GeoIP libraries and data files and enables the module for compilation.
 - `http_gzip_static_module.rb` - enables the module for compilation. Be sure to set `node['nginx']['gzip_static'] = 'yes'`.
+- `http_mp4_module` -
 - `http_perl_module.rb` - enables embedded Perl for compilation.
 - `http_realip_module.rb` - enables the module for compilation and creates the configuration.
+- `http_spdy_module` -
 - `http_ssl_module.rb` - enables SSL for compilation.
 - `http_stub_status_module.rb` - provides `nginx_status` configuration and enables the module for compilation.
+- `http_v2_module`
+- `ipv6` -
 - `naxsi_module` - enables the naxsi module for the web application firewall for nginx.
-- `passenger` - builds the passenger gem and configuration for "`mod_passenger`".
-- `syslog` - enables syslog support for nginx. This only works with source builds. See <https://github.com/yaoweibin/nginx_syslog_patch>
-- `upload_progress_module.rb` - builds the `upload_progress` module and enables it as a module when compiling nginx.
+- `ngx_devel_module` -
+- `ngx_lua_module` -
 - `openssl_source.rb` - downloads and uses custom OpenSSL source when compiling nginx
+- `pagespeed_module`-
+- `passenger` - builds the passenger gem and configuration for "`mod_passenger`".
+- `set_misc` -
+- `syslog_module` - enables syslog support for nginx. This only works with source builds. See <https://github.com/yaoweibin/nginx_syslog_patch> -
+- `upload_progress_module.rb` - builds the `upload_progress` module and enables it as a module when compiling nginx.
 
 ## Resources
 
@@ -325,14 +335,12 @@ Enable or disable a Server Block in `#{node['nginx']['dir']}/sites-available` by
 
 ## Adding New Modules
 
-To add a new module to be compiled into nginx in the source recipe, the node's run state is manipulated in a recipe, and the module as a recipe should be added to `node['nginx']['source']['modules']`. For example:
+Previously we'd add each possible module to this cookbook itself. That's not necessary using wrapper cookbooks and we'd prefer to not add any addition module recipes at this time. Instead in your nginx wrapper cookbook setup any necessary packages and then include the follow code to add the module to the list of modules to compile:
 
 ```ruby
 node.run_state['nginx_configure_flags'] =
-  node.run_state['nginx_configure_flags'] | ['--with-http_stub_status_module']
+  node.run_state['nginx_configure_flags'] | ['--with-SOMETHING', "--with-SOME_OPT='things'"]
 ```
-
-The recipe will be included by `recipe[chef_nginx::source]` automatically, adding the configure flags. Add any other configuration templates or other resources as required. See the recipes described above for examples.
 
 ## License & Authors
 
