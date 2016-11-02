@@ -113,6 +113,7 @@ when 'runit'
   service 'nginx' do
     supports       status: true, restart: true, reload: true
     reload_command "#{node['runit']['sv_bin']} hup #{node['runit']['service_dir']}/nginx"
+    action :nothing
   end
 when 'upstart'
   # we rely on this to set up nginx.conf with daemon disable instead of doing
@@ -170,7 +171,7 @@ else
 
   service 'nginx' do
     supports status: true, restart: true, reload: true
-    action   :enable
+    action :nothing
   end
 end
 

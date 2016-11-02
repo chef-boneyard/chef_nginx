@@ -246,19 +246,14 @@ These attributes are used in the `chef_nginx::upload_progress_module` recipe.
 
 ## Recipes
 
-This cookbook provides three main recipes for installing nginx.
-
-- `default.rb` - _Use this recipe_ to install nginx from either a distro package or a package provided by the repo recipe below. Note you'll need to include the repo recipe first if you plan to use the nginx.org repo.
-- `repo.rb` - _Use this recipe_ if you want to use official nginx.org repositories for RHEL, Debian/Ubuntu, and Suse platforms.
-- `source.rb` - _Use this recipe_ to compile nginx from source to avoid distro/nginx.org packages. This gives you the ultimate control over the version of nginx you use and the included modules, but it requires a number of compilation tools and time.
-
-Several recipes are related to the `source` recipe specifically. See that recipe's section below for a description.
+This cookbook contains a large number of recipes, but the `default` can be used for all install scenarios given the correct attributes are set. The remainder of the recipes are related to passenger and source installation. See the usage section for further details.
 
 ### default
 
-The default recipe will install nginx as a native package for the system through the package manager and sets up the configuration according to the Debian site enable/disable style with `sites-enabled` using the `nxensite` and `nxdissite` scripts. The nginx service will be managed with the normal init scripts that are presumably included in the native package.
+The default recipe will install nginx as a native package for the system through the distro package manager and sets up the configuration according to the Debian site enable/disable style with `sites-enabled` using the `nxensite` and `nxdissite` scripts. The nginx service will be managed with the normal init scripts that are presumably included in the native package.
 
-Includes the `ohai_plugin` recipe so the plugin is available.
+- Includes the `repo` recipe to setup the nginx.org upstream repo unless `node['nginx']['repo_source']` is set to nil
+- Includes the `ohai_plugin` recipe to provide additional nginx information to Chef via an Ohai plugin.
 
 ### socketproxy
 
@@ -270,7 +265,7 @@ This recipe provides an Ohai plugin as a template. It is included by both the `d
 
 ### authorized_ips
 
-Sets up configuration for the `authorized_ip` nginx module.
+Sets up configuration for the `authorized_ip` nginx module. Do not include this recipe directly. Instead, add it to the `node['nginx']['default']['modules']` array (see below).
 
 ### source
 

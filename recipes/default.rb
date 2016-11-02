@@ -23,7 +23,7 @@ include_recipe "chef_nginx::#{node['nginx']['install_method']}"
 
 service 'nginx' do
   supports status: true, restart: true, reload: true
-  action   :start
+  action [:start, :enable]
 end
 
 node['nginx']['default']['modules'].each do |ngx_module|
