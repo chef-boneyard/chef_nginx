@@ -45,7 +45,7 @@ action :enable do
     cookbook new_resource.cookbook
     variables(new_resource.variables)
     notifies :reload, 'service[nginx]'
-    only_if { new_resource.template }
+    not_if { new_resource.template.nil? }
   end
 
   execute "nxensite #{new_resource.name}" do
