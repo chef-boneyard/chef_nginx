@@ -45,7 +45,7 @@ action :enable do
     source new_resource.template
     cookbook new_resource.cookbook
     variables(new_resource.variables)
-    notifies :reload, 'service[nginx]'
+    notifies node['nginx']['reload_action'], 'service[nginx]'
     not_if { new_resource.template.nil? }
   end
 
@@ -55,12 +55,12 @@ action :enable do
     # use declare_resource so we can have a property also named link
     declare_resource(:link, "#{node['nginx']['dir']}/sites-enabled/#{target}") do
       to "#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
-      notifies :reload, 'service[nginx]'
+      notifies node['nginx']['reload_action'], 'service[nginx]'
     end
   else
     remote_file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
       source "file://#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
-      notifies :reload, 'service[nginx]'
+      notifies node['nginx']['reload_action'], 'service[nginx]'
     end
   end
 end
@@ -68,6 +68,6 @@ end
 action :disable do
   file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
     action :delete
-    notifies :reload, 'service[nginx]'
+    notifies node['nginx']['reload_action'], 'service[nginx]'
   end
 end

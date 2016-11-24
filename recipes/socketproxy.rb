@@ -15,7 +15,7 @@ raise 'More than one app has the same context_name configured.' if context_names
 
 template node['nginx']['dir'] + '/sites-available/socketproxy.conf' do
   source 'modules/socketproxy.conf.erb'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 link node['nginx']['dir'] + '/sites-enabled/socketproxy.conf' do

@@ -33,6 +33,7 @@ default['nginx']['binary']       = '/usr/sbin/nginx'
 default['nginx']['default_root'] = '/var/www/nginx-default'
 default['nginx']['ulimit']       = '1024'
 default['nginx']['pid']          = '/var/run/nginx.pid'
+default['nginx']['reload_action'] = :reload
 
 # use the upstream nginx repo vs. distro packages
 # this enables the use of modern nginx releases

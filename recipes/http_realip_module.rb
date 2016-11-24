@@ -28,7 +28,7 @@ node.default['nginx']['realip']['real_ip_recursive'] = 'off'
 
 template "#{node['nginx']['dir']}/conf.d/http_realip.conf" do
   source 'modules/http_realip.conf.erb'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 node.run_state['nginx_configure_flags'] =

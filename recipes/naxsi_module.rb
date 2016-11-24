@@ -21,7 +21,7 @@
 
 cookbook_file "#{node['nginx']['dir']}/naxsi_core.rules" do
   source 'naxsi_core.rules'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 naxsi_src_filename = ::File.basename(node['nginx']['naxsi']['url'])

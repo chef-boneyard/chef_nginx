@@ -30,7 +30,7 @@ end
 
 template "#{node['nginx']['dir']}/conf.d/upload_progress.conf" do
   source 'modules/upload_progress.erb'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 bash 'extract_upload_progress_module' do
