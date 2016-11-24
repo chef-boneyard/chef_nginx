@@ -27,6 +27,7 @@ property :variables, Hash, default: {}
 property :cookbook, String
 property :template, String
 property :enable, [String, true, false]
+property :link, [true, false], default: true
 
 action :enable do
   # this is pretty evil, but gives us backwards compat with the old
@@ -48,23 +49,25 @@ action :enable do
     not_if { new_resource.template.nil? }
   end
 
-  execute "nxensite #{new_resource.name}" do
-    command "#{node['nginx']['script_dir']}/nxensite #{new_resource.name}"
-    notifies :reload, 'service[nginx]'
-    not_if do
-      ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/#{new_resource.name}") ||
-        ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/000-#{new_resource.name}")
+  target = new_resource.name == 'default' ? "000-default" : "#{new_resource.name}"
+
+  if new_resource.link
+    # use declare_resource so we can have a property also named link
+    declare_resource(:link, "#{node['nginx']['dir']}/sites-enabled/#{target}") do
+      to "#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      notifies :reload, 'service[nginx]'
+    end
+  else
+    remote_file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
+      source "file://#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      notifies :reload, 'service[nginx]'
     end
   end
 end
 
 action :disable do
-  execute "nxdissite #{new_resource.name}" do
-    command "#{node['nginx']['script_dir']}/nxdissite #{new_resource.name}"
+  file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
+    action :delete
     notifies :reload, 'service[nginx]'
-    only_if do
-      ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/#{new_resource.name}") ||
-        ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/000-#{new_resource.name}")
-    end
   end
 end
