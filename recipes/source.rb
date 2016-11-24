@@ -100,7 +100,7 @@ bash 'compile_nginx_source' do
   end
 
   notifies :restart, 'service[nginx]'
-  notifies node['nginx']['reload_action'],  'ohai[reload_nginx]', :immediately
+  notifies :reload,  'ohai[reload_nginx]', :immediately
 end
 
 case node['nginx']['init_style']

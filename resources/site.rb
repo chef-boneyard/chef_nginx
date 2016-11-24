@@ -40,6 +40,9 @@ action :enable do
     return # don't perform the actual enable action afterwards
   end
 
+  #Work around for https://trac.nginx.org/nginx/ticket/1144#no4
+  dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
+
   # use declare_resource so we can have a property also named template
   declare_resource(:template, "#{node['nginx']['dir']}/sites-available/#{new_resource.name}") do
     source new_resource.template
@@ -66,6 +69,10 @@ action :enable do
 end
 
 action :disable do
+  #Work around for https://trac.nginx.org/nginx/ticket/1144#no4
+  dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
+  target = new_resource.name == 'default' ? "000-default.conf" : "#{new_resource.name}"
+
   file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
     action :delete
     notifies node['nginx']['reload_action'], 'service[nginx]'

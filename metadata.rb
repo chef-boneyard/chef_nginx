@@ -16,6 +16,8 @@ depends 'runit', '>= 1.6.0'
 depends 'compat_resource', '>= 12.14.6'
 depends 'zypper'
 
+suggests 'nssm'
+
 supports 'amazon'
 supports 'centos'
 supports 'debian'
@@ -27,6 +29,7 @@ supports 'ubuntu'
 supports 'suse'
 supports 'opensuse'
 supports 'opensuseleap'
+supports 'windows'
 
 source_url 'https://github.com/chef-cookbooks/chef_nginx'
 issues_url 'https://github.com/chef-cookbooks/chef_nginx/issues'
