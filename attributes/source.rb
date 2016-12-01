@@ -21,12 +21,16 @@
 
 include_attribute 'chef_nginx::default'
 
-default['nginx']['init_style'] = if node['platform'] == 'ubuntu' && node['platform_version'].to_f <= 14.04
-                                   # init_package identifies 12.04/14.04 as init, but we should be using upstart here
-                                   'upstart'
-                                 else
-                                   node['init_package']
-                                 end
+if node['platform'] == 'ubuntu'
+  if Chef::VersionConstraint.new('>= 15.04').include?(node['platform_version'])
+    default['nginx']['init_style'] = 'systemd'
+  elsif Chef::VersionConstraint.new('<= 14.04').include?(node['platform_version'])
+    # init_package identifies 12.04/14.04 as init, but we should be using upstart here
+    default['nginx']['init_style'] = 'upstart'
+  end
+else
+  default['nginx']['init_style'] = node['init_package']
+end
 
 default['nginx']['source']['version']                 = node['nginx']['version']
 default['nginx']['source']['prefix']                  = "/opt/nginx-#{node['nginx']['source']['version']}"
