@@ -43,9 +43,4 @@ package node['nginx']['package_name'] do
   notifies :reload, 'ohai[reload_nginx]', :immediately
 end
 
-service 'nginx' do
-  supports status: true, restart: true, reload: true
-  action   :enable
-end
-
 include_recipe 'chef_nginx::commons'
