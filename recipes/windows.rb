@@ -85,4 +85,7 @@ when 'nssm'
     notifies :enable, "service[nginx]"
     notifies :start, "service[nginx]"
   end
+
+else
+  raise "Unsupported init style: #{node['nginx']['init_style']}"
 end
