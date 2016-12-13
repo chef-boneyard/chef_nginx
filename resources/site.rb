@@ -27,6 +27,7 @@ property :variables, Hash, default: {}
 property :cookbook, String
 property :template, String
 property :enable, [String, true, false]
+property :link, [true, false], default: true
 
 action :enable do
   # this is pretty evil, but gives us backwards compat with the old
@@ -39,32 +40,41 @@ action :enable do
     return # don't perform the actual enable action afterwards
   end
 
+  #Work around for https://trac.nginx.org/nginx/ticket/1144#no4
+  dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
+
   # use declare_resource so we can have a property also named template
   declare_resource(:template, "#{node['nginx']['dir']}/sites-available/#{new_resource.name}") do
     source new_resource.template
     cookbook new_resource.cookbook
     variables(new_resource.variables)
-    notifies :reload, 'service[nginx]'
-    only_if { new_resource.template }
+    notifies node['nginx']['reload_action'], 'service[nginx]'
+    not_if { new_resource.template.nil? }
   end
 
-  execute "nxensite #{new_resource.name}" do
-    command "#{node['nginx']['script_dir']}/nxensite #{new_resource.name}"
-    notifies :reload, 'service[nginx]'
-    not_if do
-      ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/#{new_resource.name}") ||
-        ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/000-#{new_resource.name}")
+  target = new_resource.name == 'default' ? "000-default" : "#{new_resource.name}"
+
+  if new_resource.link
+    # use declare_resource so we can have a property also named link
+    declare_resource(:link, "#{node['nginx']['dir']}/sites-enabled/#{target}") do
+      to "#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      notifies node['nginx']['reload_action'], 'service[nginx]'
+    end
+  else
+    remote_file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
+      source "file://#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      notifies node['nginx']['reload_action'], 'service[nginx]'
     end
   end
 end
 
 action :disable do
-  execute "nxdissite #{new_resource.name}" do
-    command "#{node['nginx']['script_dir']}/nxdissite #{new_resource.name}"
-    notifies :reload, 'service[nginx]'
-    only_if do
-      ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/#{new_resource.name}") ||
-        ::File.symlink?("#{node['nginx']['dir']}/sites-enabled/000-#{new_resource.name}")
-    end
+  #Work around for https://trac.nginx.org/nginx/ticket/1144#no4
+  dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
+  target = new_resource.name == 'default' ? "000-default.conf" : "#{new_resource.name}"
+
+  file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
+    action :delete
+    notifies node['nginx']['reload_action'], 'service[nginx]'
   end
 end

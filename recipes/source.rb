@@ -63,7 +63,7 @@ include_recipe 'chef_nginx::commons_conf'
 
 cookbook_file "#{node['nginx']['dir']}/mime.types" do
   source 'mime.types'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 # Unpack downloaded source so we could apply nginx patches

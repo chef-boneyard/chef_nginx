@@ -1,4 +1,6 @@
+<% unless node.platform_family?('windows') %>
 user <%= node['nginx']['user'] %><% if node['nginx']['user'] != node['nginx']['group'] %> <%= node['nginx']['group'] %><% end %>;
+<% end -%>
 worker_processes <%= node['nginx']['worker_processes'] %>;
 <% if node['nginx']['daemon_disable'] -%>
 daemon off;
@@ -99,5 +101,8 @@ http {
   <% end -%>
 
   include <%= node['nginx']['dir'] %>/conf.d/*.conf;
-  include <%= node['nginx']['dir'] %>/sites-enabled/*;
+  include <%= node['nginx']['dir'] %>/sites-enabled/*<%=
+    # Work around https://trac.nginx.org/nginx/ticket/1144#no4
+    ".conf" if node.platform_family?('windows')
+  %>;
 }

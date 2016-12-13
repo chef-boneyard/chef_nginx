@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@chef.io'
 license 'Apache 2.0'
 description 'Installs and configures nginx'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '5.0.0'
+version '5.1.0'
 
 recipe 'chef_nginx', 'Installs nginx package and sets up configuration with Debian apache style with sites-enabled/sites-available'
 recipe 'chef_nginx::source', 'Installs nginx from source and sets up configuration with Debian apache style with sites-enabled/sites-available'
@@ -15,6 +15,8 @@ depends 'yum-epel'
 depends 'runit', '>= 1.6.0'
 depends 'compat_resource', '>= 12.14.6'
 depends 'zypper'
+
+depends 'nssm'
 
 supports 'amazon'
 supports 'centos'
@@ -27,6 +29,7 @@ supports 'ubuntu'
 supports 'suse'
 supports 'opensuse'
 supports 'opensuseleap'
+supports 'windows'
 
 source_url 'https://github.com/chef-cookbooks/chef_nginx'
 issues_url 'https://github.com/chef-cookbooks/chef_nginx/issues'

@@ -22,7 +22,7 @@
 include_recipe "chef_nginx::#{node['nginx']['install_method']}"
 
 service 'nginx' do
-  supports status: true, restart: true, reload: true
+  supports status: true, restart: true, reload: !platform_family?('windows')
   action   :start
 end
 

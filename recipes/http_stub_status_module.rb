@@ -24,7 +24,7 @@ include_recipe 'chef_nginx::authorized_ips'
 template 'nginx_status' do
   path "#{node['nginx']['dir']}/sites-available/nginx_status"
   source 'modules/nginx_status.erb'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
 
 nginx_site 'nginx_status'

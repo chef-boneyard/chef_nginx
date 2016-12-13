@@ -57,5 +57,5 @@ end
 
 template "#{node['nginx']['dir']}/conf.d/passenger.conf" do
   source 'modules/passenger.conf.erb'
-  notifies :reload, 'service[nginx]', :delayed
+  notifies node['nginx']['reload_action'], 'service[nginx]', :delayed
 end
