@@ -44,7 +44,7 @@ action :enable do
   dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
 
   # use declare_resource so we can have a property also named template
-  declare_resource(:template, "#{node['nginx']['dir']}/sites-available/#{new_resource.name}") do
+  declare_resource(:template, "#{node['nginx']['dir']}/sites-available/#{new_resource.name}#{dot_conf_if_needed}") do
     source new_resource.template
     cookbook new_resource.cookbook
     variables(new_resource.variables)
@@ -52,17 +52,17 @@ action :enable do
     not_if { new_resource.template.nil? }
   end
 
-  target = new_resource.name == 'default' ? "000-default" : "#{new_resource.name}"
+  target = new_resource.name == 'default' ? "000-default#{dot_conf_if_needed}" : "#{new_resource.name}#{dot_conf_if_needed}"
 
   if new_resource.link
     # use declare_resource so we can have a property also named link
     declare_resource(:link, "#{node['nginx']['dir']}/sites-enabled/#{target}") do
-      to "#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      to "#{node['nginx']['dir']}/sites-available/#{new_resource.name}#{dot_conf_if_needed}"
       notifies node['nginx']['reload_action'], 'service[nginx]'
     end
   else
     remote_file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
-      source "file://#{node['nginx']['dir']}/sites-available/#{new_resource.name}"
+      source "file://#{node['nginx']['dir']}/sites-available/#{new_resource.name}#{dot_conf_if_needed}"
       notifies node['nginx']['reload_action'], 'service[nginx]'
     end
   end
@@ -71,7 +71,7 @@ end
 action :disable do
   #Work around for https://trac.nginx.org/nginx/ticket/1144#no4
   dot_conf_if_needed = node.platform_family?('windows') ? '.conf' : ''
-  target = new_resource.name == 'default' ? "000-default.conf" : "#{new_resource.name}"
+  target = new_resource.name == 'default' ? "000-default.conf" : "#{new_resource.name}#{dot_conf_if_needed}"
 
   file "#{node['nginx']['dir']}/sites-enabled/#{target}" do
     action :delete
