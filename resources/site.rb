@@ -28,6 +28,8 @@ property :cookbook, String
 property :template, [String, Array]
 property :enable, [String, true, false]
 
+default_action :enable
+
 action :enable do
   # this is pretty evil, but gives us backwards compat with the old
   # definition where there was an enable property vs a true action
