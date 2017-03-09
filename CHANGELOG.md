@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the nginx cookbook.
 
+## 5.1.2 (2017-03-08)
+- adds `default_action` to _resources/site.rb_ to fix *FC016*
+- dummy commit to add DCO
+
 ## 5.1.1 (2017-03-02)
 
 - Add WantedBy to systemd service file so it starts at boot

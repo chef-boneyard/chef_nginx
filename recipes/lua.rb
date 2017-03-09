@@ -18,8 +18,8 @@
 #
 
 luajit_src_filename = ::File.basename(node['nginx']['luajit']['url'])
-luajit_src_filepath = "#{Chef::Config['file_cache_path']}/#{luajit_src_filename}"
-luajit_extract_path = "#{Chef::Config['file_cache_path']}/luajit-#{node['nginx']['luajit']['version']}"
+luajit_src_filepath = ::File.join(Chef::Config['file_cache_path'], "#{luajit_src_filename}")
+luajit_extract_path = ::File.join(Chef::Config['file_cache_path'], "luajit-#{node['nginx']['luajit']['version']}")
 
 remote_file luajit_src_filepath do
   source   node['nginx']['luajit']['url']
