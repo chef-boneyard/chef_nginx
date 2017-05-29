@@ -122,7 +122,6 @@ when 'upstart'
     action   [:start, :enable]
   end
 when 'systemd'
-
   systemd_prefix = platform_family?('suse') ? '/usr/lib' : '/lib'
 
   template "#{systemd_prefix}/systemd/system/nginx.service" do
