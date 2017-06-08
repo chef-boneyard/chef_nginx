@@ -19,6 +19,7 @@ platforms:
     image: amazonlinux:latest
     pid_one_command: /sbin/init
     intermediate_instructions:
+      - RUN touch /etc/sysconfig/network
       - RUN yum -y install lsof which initscripts net-tools sudo wget
 
 - name: debian-7
