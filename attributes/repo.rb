@@ -34,7 +34,12 @@ default['nginx']['upstream_repository'] =
       "http://nginx.org/packages/rhel/#{node['platform_version'].to_i}/$basearch/"
     end
   when 'debian'
-    "http://nginx.org/packages/#{node['platform']}"
+    case node['platform']
+    when 'raspbian'
+      'http://nginx.org/packages/debian'
+    else
+      "http://nginx.org/packages/#{node['platform']}"
+    end
   when 'suse'
     'http://nginx.org/packages/sles/12'
   end
