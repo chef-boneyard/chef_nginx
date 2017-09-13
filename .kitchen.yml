@@ -9,14 +9,18 @@ verifier:
   name: inspec
 
 platforms:
-  - name: centos-6.9
-  - name: centos-7.3
-  - name: debian-7.11
-  - name: debian-8.8
-  - name: fedora-25
-  - name: freebsd-10.3
-  - name: freebsd-11.0
-  - name: opensuse-leap-42.2
+  - name: amazonlinux
+    driver_config:
+      box: mvbcoding/awslinux
+  - name: centos-6
+  - name: centos-7
+  - name: debian-7
+  - name: debian-8
+  - name: debian-9
+  - name: fedora-26
+  - name: freebsd-10
+  - name: freebsd-11
+  - name: opensuse-leap-42
   - name: ubuntu-14.04
   - name: ubuntu-16.04
   - name: ubuntu-16.04-chef-12.5
@@ -30,8 +34,8 @@ suites:
     run_list:
       - recipe[test::distro_packages]
     excludes: # these all lack distro packages
-      - centos-6.9
-      - centos-7.3
+      - centos-6
+      - centos-7
   - name: source
     run_list:
       - recipe[test::source]
@@ -39,8 +43,8 @@ suites:
     run_list:
       - recipe[test::epel]
     includes:
-      - centos-6.9
-      - centos-7.3
+      - centos-6
+      - centos-7
       - freebsd-10.3
       - freebsd-11.0
   - name: source
@@ -50,7 +54,7 @@ suites:
     run_list:
       - recipe[test::upstream_repo]
     excludes:
-      - fedora-25 # lacks nginx repo
+      - fedora-26 # lacks nginx repo
       - ubuntu-16.04-chef-12.5
       - freebsd-10.3
       - freebsd-11.0
@@ -69,9 +73,9 @@ suites:
       - freebsd-10.3
       - freebsd-11.0
       - opensuse-leap-42.2
-      - centos-6.8
-      - centos-7.3
-      - fedora-25
+      - centos-6
+      - centos-7
+      - fedora-26
     attributes:
       nginx:
         repo_source: 'passenger'
