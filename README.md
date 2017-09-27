@@ -6,9 +6,9 @@ Installs nginx from package OR source code and sets up configuration handling si
 
 ## nginx vs. chef_nginx
 
-This cookbook is a fork from the 2.7.x branch of the [community nginx cookbook](https://github.com/miketheman/nginx).
+This cookbook was a fork from the 2.7.x branch of the [community nginx cookbook](https://github.com/chef-cookbooks/nginx).
 
-This fork will be actively supported by Chef Software and we will continue to migrate the cookbook to a more resource driven model, with incremental changes following the SemVer model.
+Changes from chef_nginx have been merged over to nginx, and folks should migrate back to using the [community nginx cookbook](https://github.com/chef-cookbooks/nginx).
 
 ## Requirements
 
